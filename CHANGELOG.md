@@ -8,7 +8,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ### Added
 
-- Add more robust to `token_delete_transaction.py`
+- Add more robust receipt checks to `examples/tokens/token_delete_transaction.py`
 - Add detail to `token_airdrop.py` and `token_airdrop_cancel.py`
 - Add workflow: github bot to respond to unverified PR commits (#750)
 - Add workflow: bot workflow which notifies developers of workflow failures in their pull requests.
