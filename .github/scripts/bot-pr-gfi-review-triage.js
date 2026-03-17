@@ -22,7 +22,9 @@ try {
   exitWith(`Failed to read or parse GITHUB_EVENT_PATH: ${e.message}`);
 }
 
-const PR_NUMBER = event && event.pull_request && event.pull_request.number;
+const PR_NUMBER =
+  event?.pull_request?.number ||
+  event?.issue?.number;
 if (!PR_NUMBER) {
   console.log("No pull_request.number found in event payload");
   process.exit(0);
