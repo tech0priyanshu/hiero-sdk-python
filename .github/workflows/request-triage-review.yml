@@ -5,15 +5,12 @@ on:
     types: [labeled]
 
   workflow_dispatch:
-      inputs:
-        dry_run:
-          description: 'Dry run mode (no actual review requests will be made)'
-          required: false
-          default: 'true'
+    inputs:
+      dry_run:
+        description: 'Dry run mode (no actual review requests will be made)'
+        required: false
+        default: 'true'
 
-concurrency:
-    group: request-triage-${{ github.event.pull_request.number }}
-    cancel-in-progress: false
 
 permissions:
   contents: read
@@ -21,16 +18,19 @@ permissions:
 
 jobs:
   request-triage:
-    if: ${{ github.event.label && (github.event.label.name == 'Good First Issue' || github.event.label.name == 'Beginner') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.label && (github.event.label.name == 'Good First Issue' || github.event.label.name == 'Beginner')) }}
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: request-triage-${{ github.event.pull_request.number || github.run_id }}
+      cancel-in-progress: false
+
     steps:
       - name: Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
-
-      - name: Make script executable
-        run: chmod +x .github/scripts/bot-pr-gfi-review-triage.sh
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Request triage by comment
-        run: .github/scripts/bot-pr-gfi-review-triage.sh
+        run: node .github/scripts/bot-pr-gfi-review-triage.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run || 'false' }}
