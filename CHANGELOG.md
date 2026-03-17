@@ -6,6 +6,24 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 ## [Unreleased]
 
+### Src
+
+
+### Examples
+- edit
+
+### Tests
+
+
+### Docs
+
+
+### .github
+
+
+
+## [0.2.2] - 2026-03-17
+
 ### Added
 
 - GitHub Actions workflow to review pull requests labeled with `GFI` and `Beginner`. (`#1721`)
