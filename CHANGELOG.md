@@ -25,19 +25,23 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [0.2.2] - 2026-03-17
 
 ### Added
+
+- GitHub Actions workflow to review pull requests labeled with `GFI` and `Beginner`. (`#1721`)
 - Added CodeRabbit review instructions in `.coderabbit.yaml` for account module `src/hiero_sdk_python/account/`.
 - Add support for `include_children` to TransactionRecordQuery ([#1512](https://github.com/hiero-ledger/hiero-sdk-python/issues/1512))
 
 ### Changed
+
 - Changed pytest version to "pytest>=8.3.4,<10" (#1917)
 - Update protobuf schema version to v0.72.0-rc.2 in `.coderabbit.yaml`
 
 ### Src
+
 - Updated `generated_proto.py` file to work with new proto version
 - fix: Ensure UTF-8 encoding when reading and writing proto files in `generate_proto.py` to prevent encoding issues on Windows (`#1963`)
 
-
 ### Examples
+
 - Updated the `examples/consensus/topic_create_transaction_revenue_generating.py` example to use `Client.from_env()` for simpler client setup. (#1964)
 
 - Refactored `examples/consensus/topic_delete_transaction.py` to use Client.from_env() for simplified client initialization, removed manual setup code, and cleaned up unused imports (`os`, `AccountId`, `PrivateKey`). (`#1971`)
@@ -45,13 +49,13 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ### Tests
 
 ### Docs
+
 - Replaced relative documentation links in `README.md` with absolute GitHub URLs to fix broken PyPI rendering.
 - docs: Clarified AI usage in Good First Issues templates. (#1923)
 - docs: Moved the Windows setup guide to docs/sdk_developers/ and added missing setup sections. (`#1953`)
 
-
-
 ### .github
+
 - chore: ensure uv run uses lowest-direct resolution in deps-check workflow (#1919)
 - Added PR draft explainer workflow to comment when PRs are converted to draft after changes are requested. (#1723)
 - changed `pr-check-test` to run unit matrix first, run integration matrix only after unit success, skip docs/examples/.github-only changes, and parallelize integration tests with xdist (`#1878`)
@@ -67,13 +71,13 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - chore: update bot-community-calls workflow to use self hosted runner (#1942)
 - chore(ci): update bot-inactivity-unassign workflow to use hl-sdk-py-lin-md runner
 - chore: update bot-gfi-candidate-notification workflow to use hl-sdk-py-lin-md runner (`#1966`)
+
 ## [0.2.1] - 2026-03-05
 
 ### Added
 
 - Added unit test and __repr__ for NftId class(#1627).
 - Added CodeRabbit review instructions for the nodes module in `.coderabbit.yaml` (#1699)
-- GitHub Actions workflow to review pull requests labeled with `GFI` and `Beginner`. (`#1721`)
 - Added CodeRabbit review instructions for the transaction module in `.coderabbit.yaml` (#1696)
 - Added CodeRabbit review instructions and path mapping for the schedule module (`src/hiero_sdk_python/schedule/`) in `.coderabbit.yaml` (#1698)
 - Added advanced code review prompts for the `src/hiero_sdk_python/file` module in `.coderabbit.yaml` to guide reviewers in verifying proper `FileAppendTransaction` chunking constraints and nuances in memo handling for `FileUpdateTransaction` according to Hiero SDK best practices. (#1697)
@@ -86,6 +90,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Fixed duplication in GitHub bot next issue recommendations by parsing actual issue descriptions instead of blind truncation (#1658)
 
 ### Src
+
 - Add `staking_info` field to `ContractInfo` class to expose staking metadata using the `StakingInfo` wrapper. (#1365)
 - Fix `TopicInfo.__str__()` to format `expiration_time` in UTC so unit tests pass in non-UTC environments. (#1800)
 - Resolve CodeQL `reflected-XSS` warning in TCK JSON-RPC endpoint
@@ -93,6 +98,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Added `wait_for_receipt` parameter for `Transaction.execute()` to support optional receipt waiting, and `get_receipt_query`, `get_record_query` and `get_record` to `TransactionResponse`.
 
 ### Examples
+
 - Refactor `examples/file/file_create_transaction.py` to remove `os`,`dotenv`,`AccountId`,`PrivateKey`,`Network` imports that are no longer needed and updated setup-client() (#1610)
 
 - Refactored contract_delete_transaction example to use Client.from_env. (#1823)
@@ -110,13 +116,13 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - docs: Clarify issues need to be assigned in template files. (#1884)
 - doc: Fix testnet link in README.md. (#1879)
 
-
-
 ### Tests
+
 - Format `tests/unit/endpoint_test.py` using black. (`#1792`)
 - Implement TCK JSON-RPC server with request handling and error management
 
 ### .github
+
 - Added triage members max assignment is protected from being a mentor in `.github/scripts/bot-assignment-check.sh`. (#1718)
 - Added automated bot to comment on PRs with invalid conventional commit titles, providing guidance on fixing the title format (#1705)
 - Revert PythonBot workflow to restore previous stable behavior. (#1825)
@@ -138,6 +144,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 ## [0.2.0] - 2026-11-02
 
 ### Tests
+
 - Format `tests/unit/crypto_utils_test.py` with black for code style consistency (#1524)
 - Standardize formatting of `tests/unit/entity_id_helper_test.py` using Black for consistent code style across the test suite (#1527)
 
@@ -164,6 +171,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Format `tests/unit/custom_fee_test.py` with black for code style consistency. (#1525)
 
 ### Added
+
 - Implement custom `__repr__` method for `FileId` class that returns constructor-style representation for improved debugging experience (#1628)
 - Added foundational guide for GitHub Workflows (#1741)
 - Contract-specific CodeRabbit review instructions in `.coderabbit.yaml` for improved automated PR feedback on ABI, gas, ContractId, and protobuf safety. (#1695)
@@ -237,20 +245,20 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - feat: AccountCreateTransaction now supports both PrivateKey and PublicKey [#939](https://github.com/hiero-ledger/hiero-sdk-python/issues/939)
 - Added Acceptance Criteria section to Good First Issue template for better contributor guidance (#997)
 - Added `__str__()` to CustomRoyaltyFee and updated examples and tests accordingly (#986)
-- Restore bug and feature request issue templates (#996)(https://github.com/hiero-ledger/hiero-sdk-python/issues/996)
+- Restore bug and feature request issue templates (#996)(<https://github.com/hiero-ledger/hiero-sdk-python/issues/996>)
 - Support selecting specific node account ID(s) for queries and transactions and added `Network._get_node()` with updated execution flow (#362)
 - Add TLS support with two-stage control (`set_transport_security()` and `set_verify_certificates()`) for encrypted connections to Hedera networks. TLS is enabled by default for hosted networks (mainnet, testnet, previewnet) and disabled for local networks (solo, localhost) (#855)
 - Add PR inactivity reminder bot for stale pull requests `.github/workflows/pr-inactivity-reminder-bot.yml`
 - Add comprehensive training documentation for \_Executable class `docs/sdk_developers/training/executable.md`
 - Added empty `docs/maintainers/good_first_issues.md` file for maintainers to write Good First Issue guidelines (#1034)
-- Added new `.github/ISSUE_TEMPLATE/04_good_first_issue_candidate.yml` file (1068)(https://github.com/hiero-ledger/hiero-sdk-python/issues/1068)
+- Added new `.github/ISSUE_TEMPLATE/04_good_first_issue_candidate.yml` file (1068)(<https://github.com/hiero-ledger/hiero-sdk-python/issues/1068>)
 - Enhanced `.github/ISSUE_TEMPLATE/01_good_first_issue.yml` with welcoming message and acceptance criteria sections to guide contributors in creating quality GFIs (#1052)
 - Add workflow to notify team about P0 issues `bot-p0-issues-notify-team.yml`
 - Added Issue Reminder (no-PR) bot, .github/scripts/issue_reminder_no_pr.sh and .github/workflows/bot-issue-reminder-no-pr.yml to automatically detect assigned issues with no linked pull requests for 7+ days and post a gentle ReminderBot comment.(#951)
-- Add support for include_children in TransactionGetReceiptQuery (#1100)(https://github.com/hiero-ledger/hiero-sdk-python/issues/1100)
-- Add new `.github/ISSUE_TEMPLATE/05_intermediate_issue.yml` file (1072)(https://github.com/hiero-ledger/hiero-sdk-python/issues/1072)
+- Add support for include_children in TransactionGetReceiptQuery (#1100)(<https://github.com/hiero-ledger/hiero-sdk-python/issues/1100>)
+- Add new `.github/ISSUE_TEMPLATE/05_intermediate_issue.yml` file (1072)(<https://github.com/hiero-ledger/hiero-sdk-python/issues/1072>)
 - Add a workflow to notify the team when issues are labeled as “good first issues” or identified as candidates for that label: `bot-gfi-notify-team.yml`(#1115)
-- Added **str** and **repr** to AccountBalance
+- Added __str__ and __repr__ to AccountBalance
 - Added GitHub workflow that makes sure newly added test files follow pytest test files naming conventions (#1054)
 - Added advanced issue template
 - Added advanced issue template for contributors `.github/ISSUE_TEMPLATE/06_advanced_issue.yml`.
@@ -287,12 +295,14 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Added `__eq__` and `__hash__` functions for Key
 
 ### Documentation
+
 - Added `docs/workflows/02-architecture.md`: explains the orchestration (YAML) vs. business logic (JS) separation pattern for GitHub workflows (#1742)
 - Fix relative links in `testing.md`, clean up `CONTRIBUTING.md` TOC, and normalize test file naming and paths (`#1706`)
 - Added comprehensive docstring to `compress_with_cryptography` function (#1626)
 - Replaced the docstring in `entity_id_helper.py` with one that is correct. (#1623)
 
 ### Changed
+
 - Reduced linting errors in `examples/` directory by 80% (952 → 185) by fixing docstring formatting, import ordering, and applying auto-fixes (#1768)
 - Improved bot message formatting in LinkBot to display issue linking format as a code block for better clarity (#1762)
 - Refactored `setup_client()` in all `examples/query/` files to use `Client.from_env()` for simplified client initialization (#1449)
@@ -360,7 +370,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
   `examples.yml` → `pr-check-examples.yml`,
   `test.yml` → `pr-check-test.yml` (#1043)
 - Cleaned up `token_airdrop_claim_auto` example for pylint compliance (no functional changes). (#1079)
-- Formatted `examples/query` using black (#1082)(https://github.com/hiero-ledger/hiero-sdk-python/issues/1082)
+- Formatted `examples/query` using black (#1082)(<https://github.com/hiero-ledger/hiero-sdk-python/issues/1082>)
 - Update team notification script and workflow for P0 issues 'p0_issues_notify_team.js'
 - Rename test files across the repository to ensure they consistently end with \_test.py (#1055)
 - Cleaned up `token_airdrop_claim_signature_required` example for pylint compliance (no functional changes). (#1080)
@@ -397,8 +407,8 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - chore: clarify wording in the bot-assignment-check.sh (#1748)
 - Refactored SDK dependencies to use version ranges, moved build-only deps out of runtime, removed unused core deps and added optional extras.
 
-   
 ### Fixed
+
 - Added a fork guard condition to prevent Codecov upload failures on fork PRs due to missing token. (`#1485`)
 - Corrected broken documentation links in SDK developer training files.(#1707)
 - Updated Good First Issue recommendations to supported Hiero repositories. (#1689)
@@ -551,7 +561,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - Update `docs/sdk_users/running_examples.md` to include `TokenFeeScheduleUpdateTransaction`.
 - added FreezeTransaction class
 - added FreezeType class
-- Added `docs/sdk_developers/pylance.md`, a new guide explaining how to set up and use **Pylance** in VS Code for validating imports, file references, and methods before review. (#713)
+- Added `docs/sdk_developers/pylance.md`, a new guide explaining how to set up and use __Pylance__ in VS Code for validating imports, file references, and methods before review. (#713)
 - feat: TokenAirdropClaim Transaction, examples (with signing required and not), unit and integration tests (#201)
 - docs: Add Google-style docstrings to `TokenId` class and its methods in `token_id.py`.
 - added Google-style docstrings to the `TransactionRecord` class including all dataclass fields, `__repr__`, `_from_proto()` & `_to_proto()` methods.
@@ -568,6 +578,7 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 - docs: Add `docs/sdk_developers/project_structure.md` to explain repository layout and import paths.
 
 ### Changed
+
 - chore: renamed examples to match src where possible
 - Moved examples/ to be inside subfiles to match src structure
 - changed example script workflow to run on new subdirectory structure
@@ -813,11 +824,11 @@ contract_call_local_pb2.ContractLoginfo -> contract_types_pb2.ContractLoginfo
 
 - Removed init.py content in /tokens
 
-**Changed imports**
+__Changed imports__
 
 - src/hiero_sdk_python/consensus/topic_message.py: from hiero_sdk_python import Timestamp → from hiero_sdk_python.timestamp import Timestamp
 - src/hiero_sdk_python/query/topic_message_query.py: from hiero_sdk_python import Client → from hiero_sdk_python.client.client import Client
-- src/hiero_sdk_python/tokens/**init**.py: content removed.
+- src/hiero_sdk_python/tokens/__init__.py: content removed.
 - src/hiero_sdk_python/tokens/token_info.py: from hiero_sdk_python.hapi.services.token_get_info_pb2 import TokenInfo as proto_TokenInfo → from hiero_sdk_python.hapi.services import token_get_info_pb2
 - src/hiero_sdk_python/tokens/token_key_validation.py: from hiero_sdk_python.hapi.services → import basic_types_pb2
 - src/hiero_sdk_python/tokens/token_kyc_status.py: from hiero_sdk_python.hapi.services.basic_types_pb2 import TokenKycStatus as proto_TokenKycStatus → from hiero_sdk_python.hapi.services import basic_types_pb2
@@ -858,7 +869,7 @@ contract_call_local_pb2.ContractLoginfo -> contract_types_pb2.ContractLoginfo
 
 ### Breaking API changes
 
-**We have several camelCase uses that will be deprecated → snake_case** Original aliases will continue to function, with a warning, until the following release.
+__We have several camelCase uses that will be deprecated → snake_case__ Original aliases will continue to function, with a warning, until the following release.
 
 #### In `token_info.py`
 
@@ -1010,6 +1021,5 @@ contract_call_local_pb2.ContractLoginfo -> contract_types_pb2.ContractLoginfo
 ### Removed
 
 - N/A
-
 
 # [0.1.0] - 2025-02-19
