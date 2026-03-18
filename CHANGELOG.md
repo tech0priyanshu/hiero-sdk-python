@@ -20,6 +20,8 @@ This changelog is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.
 
 
 ### .github
+
+- ci: add pr-check-examples gate script ([#1949](https://github.com/hiero-ledger/hiero-sdk-python/issues/1949))
 - fix: prevent CodeRabbit from posting comments on closed issues(#1962)
 
 
