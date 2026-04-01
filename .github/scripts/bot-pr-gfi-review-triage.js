@@ -1,140 +1,102 @@
-#!/usr/bin/env node
-"use strict";
+/**
+ * This script automatically requests triage reviews on PRs labeled as "Good First Issue" or "Beginner".
+ * It runs on when a pr added with label "Good First Issue" or "Beginner" and posts a comment mentioing triage reviewers.
+ * 
+ * safty measures:
+ * - Only runs on PRs (not issues).
+ * - Only run for once per pr.
+ * - it does not run on new commit push but can run on pr label update 
+ */
+
+
 const fs = require("fs");
 const https = require("https");
-const path = require("path");
 
-function exitWith(msg, code = 1) {
-  console.error(msg);
-  process.exit(code);
+function fail(message) {
+  console.error(`${message}`);
+  process.exit(1);
 }
 
-const GITHUB_EVENT_PATH = process.env.GITHUB_EVENT_PATH;
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY;
-if (!GITHUB_EVENT_PATH || !GITHUB_REPOSITORY) {
-  exitWith("This script is intended to run inside GitHub Actions (needs GITHUB_EVENT_PATH and GITHUB_REPOSITORY).");
+function info(message) {
+  console.log(`${message}`);
 }
+
+
+const eventPath = process.env.GITHUB_EVENT_PATH;
+const repository = process.env.GITHUB_REPOSITORY;
+const token = process.env.GITHUB_TOKEN;
+
+if (!eventPath) fail("GITHUB_EVENT_PATH is not set.");
+if (!repository) fail("GITHUB_REPOSITORY is not set.");
+if (!token) fail("GITHUB_TOKEN is not set.");
+
 
 let event;
+
 try {
-  event = JSON.parse(fs.readFileSync(GITHUB_EVENT_PATH, "utf8"));
-} catch (e) {
-  exitWith(`Failed to read or parse GITHUB_EVENT_PATH: ${e.message}`);
+  const payload = fs.readFileSync(eventPath, "utf8");
+  event = JSON.parse(payload);
+} catch (err) {
+  fail(`Failed to read GitHub event payload: ${err.message}`);
 }
 
-const PR_NUMBER =
-  event?.pull_request?.number ||
-  event?.issue?.number;
-if (!PR_NUMBER) {
-  console.log("No pull_request.number found in event payload");
+const prNumber = event?.pull_request?.number;
+
+if (!prNumber) {
+  info("No pull request found in event payload. Exiting.");
   process.exit(0);
 }
 
-const [OWNER, REPO] = GITHUB_REPOSITORY.split("/");
-if (!OWNER || !REPO) {
-  exitWith("GITHUB_REPOSITORY must be in owner/repo format");
-}
-const TOKEN = process.env.GITHUB_TOKEN;
-if (!TOKEN) exitWith("GITHUB_TOKEN not set");
 
-const DRY_RUN = (process.env.DRY_RUN || "true").toLowerCase();
-const isDryRun = !(DRY_RUN === "false" || DRY_RUN === "0" || DRY_RUN === "no");
+const [owner, repo] = repository.split("/");
 
-const TRIAGE_FILE = path.join(process.cwd(), ".github", "triage-reviewers.txt");
-let triageList = "";
-if (fs.existsSync(TRIAGE_FILE)) {
-  triageList = fs
-    .readFileSync(TRIAGE_FILE, "utf8")
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line && !line.startsWith("#"))
-    .join(" ");
-} else {
-  triageList = (process.env.TRIAGE_REVIEWERS || "").trim();
+if (!owner || !repo) {
+  fail("Invalid GITHUB_REPOSITORY format. Expected owner/repo.");
 }
 
-if (!triageList) exitWith("No triage reviewers configured. Provide .github/triage-reviewers.txt or TRIAGE_REVIEWERS env var.");
 
-const mentions = triageList
-  .replace(/,/g, " ")
-  .split(/\s+/)
-  .filter(Boolean)
-  .map((name) => (name.startsWith("@") ? name : `@${name}`))
-  .join(" ");
-const MARKER = "<!-- triage-request -->";
-const BODY_TEXT = `${MARKER}\nRequesting triage review from: ${mentions}`;
+const commentBody =
+  "Requesting triage review from: @hiero-ledger/hiero-sdk-python-triage";
 
-console.log(`PR #${PR_NUMBER} in ${OWNER}/${REPO} — triage mentions: ${mentions}`);
+info(`Preparing to comment on PR #${prNumber} in ${owner}/${repo}`);
 
-function apiRequest(method, pathUrl, data) {
-  const options = {
-    method,
-    hostname: "api.github.com",
-    path: pathUrl,
-    headers: {
-      "User-Agent": "hiero-sdk-bot",
-      "Accept": "application/vnd.github+json",
-      "Authorization": `Bearer ${TOKEN}`,
-    },
-  };
 
-  return new Promise((resolve, reject) => {
-    const req = https.request(options, (res) => {
-      let body = "";
-      res.on("data", (chunk) => (body += chunk));
-      res.on("end", () => {
-        try {
-          const parsed = body ? JSON.parse(body) : null;
-          if (res.statusCode && res.statusCode >= 400) {
-            const err = new Error(`HTTP ${res.statusCode}: ${res.statusMessage}`);
-            err.response = parsed || body;
-            return reject(err);
-          }
-          resolve(parsed);
-        } catch (e) {
-          reject(e);
-        }
-      });
-    });
-    req.on("error", reject);
-    if (data) {
-      const payload = JSON.stringify(data);
-      req.setHeader("Content-Type", "application/json");
-      req.setHeader("Content-Length", Buffer.byteLength(payload));
-      req.write(payload);
-    }
-    req.end();
+const data = JSON.stringify({ body: commentBody });
+
+const options = {
+  hostname: "api.github.com",
+  path: `/repos/${owner}/${repo}/issues/${prNumber}/comments`,
+  method: "POST",
+  headers: {
+    "User-Agent": "triage-review-bot",
+    "Authorization": `Bearer ${token}`,
+    "Accept": "application/vnd.github+json",
+    "Content-Type": "application/json",
+    "Content-Length": Buffer.byteLength(data),
+  },
+};
+
+const req = https.request(options, (res) => {
+  let body = "";
+
+  res.on("data", (chunk) => {
+    body += chunk;
   });
-}
 
-(async () => {
-  try {
-    const commentsPath = `/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments`;
-    const comments = await apiRequest("GET", commentsPath);
-    if (Array.isArray(comments)) {
-      if (comments.some((c) => typeof c.body === "string" && c.body.includes(MARKER))) {
-        console.log("Triage comment already present; skipping.");
-        process.exit(0);
-      }
-    }
-
-    if (isDryRun) {
-      console.log("DRY RUN: would post comment to PR #" + PR_NUMBER + " with body:\n---\n" + BODY_TEXT + "\n---");
-      process.exit(0);
-    }
-
-    console.log("Posting triage request comment to PR #" + PR_NUMBER);
-    const resp = await apiRequest("POST", commentsPath, { body: BODY_TEXT });
-    const comment_id = resp && resp.id;
-    if (comment_id) {
-      console.log("Comment posted successfully (id: " + comment_id + ")");
+  res.on("end", () => {
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      info("Comment posted successfully.");
     } else {
-      console.log("Comment posted; response: " + JSON.stringify(resp));
+      console.error(`Error: GitHub API error (${res.statusCode})`);
+      console.error(body);
+      process.exit(1);
     }
-    process.exit(0);
-  } catch (err) {
-    console.error("Error:", err && err.message || err);
-    if (err && err.response) console.error("Response:", JSON.stringify(err.response));
-    process.exit(1);
-  }
-})();
+  });
+});
+
+req.on("error", (err) => {
+  fail(`Request failed: ${err.message}`);
+});
+
+req.write(data);
+req.end();
