@@ -17,8 +17,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Request triage by comment
-        run: node .github/scripts/bot-pr-gfi-review-triage.js
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+      - name: Request triage review
+        run: |
+          const prNumber = context.payload.pull_request.number;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: "Requesting triage review from: @hiero-ledger/hiero-sdk-python-triage"
+            });
